@@ -17,13 +17,21 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 - Exportable race debrief
 - Deterministic fixtures and tests
 
+## 2026-09-06 foundry cycle
+Objective: establish the first framework-agnostic analytical kernel before adding UI work.
+Branch: `foundry/core-race-analysis-v0`.
+Files: `src/core/race.ts`, `src/core/analysis.ts`, `src/core/analysis.test.ts`.
+Implemented: typed race/baseline schemas; finite/non-negative validation; total-time decomposition; baseline-normalized segment deltas; deterministic bottleneck ranking using an explicit recoverable-time assumption; target-time simulation; synthetic deterministic fixtures.
+Evidence boundary: fixtures are SYNTHETIC and contain no athlete claims. The recoverable fraction is an explicit scenario parameter, not a causal training claim.
+Validation: source and deterministic checks are committed, but checks are NOT YET EXECUTED in CI because opening a PR would trigger hosted CI for all PR paths. No green result is claimed.
+Blocker: install/run the deterministic checks locally or via a deliberately approved CI run, then add ingestion parsers.
+Next step: make deterministic checks executable through a low-cost test script, validate them, then add CSV/JSON ingestion with strict schema errors.
+Claim status: core architecture SUPPORTED by explicit deterministic definitions; runtime correctness NOT YET PROVEN.
+
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
 
 ## Initial evidence target
 Use public or synthetic HYROX-style split examples only. Do not fabricate athlete performance data or claim causal training advice from race splits alone.
-
-## Next move
-Inspect the Expo bootstrap, separate a framework-agnostic `src/core` analysis layer from UI code, define the race schema, and add deterministic unit tests for total-time decomposition and segment-delta ranking.
 
 Status: ACTIVE / NOT YET PROVEN
