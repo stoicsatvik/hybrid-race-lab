@@ -36,14 +36,8 @@ function parseSegment(value: unknown, index: number): RaceSegment {
   return { id, label, kind: raw.kind as SegmentKind, durationSeconds: raw.durationSeconds, evidence: raw.evidence as EvidenceClass };
 }
 
-export function parseRaceJson(input: string): RaceRecord {
-  let decoded: unknown;
-  try {
-    decoded = JSON.parse(input);
-  } catch {
-    throw new Error("race JSON is malformed");
-  }
-  const raw = object(decoded, "race");
+export function parseRaceManual(input: unknown): RaceRecord {
+  const raw = object(input, "race");
   exactKeys(raw, ["id", "athleteLabel", "eventLabel", "segments"], "race");
   if (!Array.isArray(raw.segments) || raw.segments.length === 0) throw new Error("race.segments must be a non-empty array");
   const race: RaceRecord = {
@@ -54,6 +48,16 @@ export function parseRaceJson(input: string): RaceRecord {
   };
   validateRace(race);
   return race;
+}
+
+export function parseRaceJson(input: string): RaceRecord {
+  let decoded: unknown;
+  try {
+    decoded = JSON.parse(input);
+  } catch {
+    throw new Error("race JSON is malformed");
+  }
+  return parseRaceManual(decoded);
 }
 
 function parseCsvLine(line: string, lineNumber: number): string[] {
@@ -112,7 +116,5 @@ export function parseRaceCsv(input: string): RaceRecord {
     segments.push(parseSegment({ id: segmentId, label: segmentLabel, kind, durationSeconds, evidence }, offset));
   });
 
-  const race: RaceRecord = { id: raceId!, athleteLabel, eventLabel, segments };
-  validateRace(race);
-  return race;
+  return parseRaceManual({ id: raceId!, athleteLabel, eventLabel, segments });
 }
