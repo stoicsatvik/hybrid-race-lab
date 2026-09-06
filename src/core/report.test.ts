@@ -1,4 +1,4 @@
-import { buildRaceDebrief, exportRaceDebriefJson } from "./report";
+import { buildRaceDebrief, exportRaceDebriefJson, targetFeasibility } from "./report";
 import { RaceBaseline, RaceRecord } from "./race";
 
 const race: RaceRecord = {
@@ -31,7 +31,25 @@ describe("race debrief", () => {
     expect(JSON.parse(exportRaceDebriefJson(report))).toEqual(report);
   });
 
-  it("rejects an empty sensitivity grid", () => {
+  it("constructs a deterministic feasible target from ranked recoverable savings", () => {
+    const result = targetFeasibility(race, baseline, 480, 0.5);
+    expect(result.requiredSavingsSeconds).toBe(40);
+    expect(result.availableSavingsSeconds).toBe(42.5);
+    expect(result.feasible).toBe(true);
+    expect(result.selectedSavings).toEqual({ "station-1": 30, "run-1": 10 });
+    expect(result.projectedFinishSeconds).toBe(480);
+  });
+
+  it("reports an infeasible target without pretending missing savings exist", () => {
+    const result = targetFeasibility(race, baseline, 470, 0.5);
+    expect(result.requiredSavingsSeconds).toBe(50);
+    expect(result.availableSavingsSeconds).toBe(42.5);
+    expect(result.feasible).toBe(false);
+    expect(result.projectedFinishSeconds).toBe(477.5);
+  });
+
+  it("rejects invalid targets and an empty sensitivity grid", () => {
+    expect(() => targetFeasibility(race, baseline, -1)).toThrow("targetSeconds must be finite and non-negative");
     expect(() => buildRaceDebrief(race, baseline, [])).toThrow("recoverableFractions must not be empty");
   });
 });
