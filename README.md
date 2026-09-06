@@ -1,56 +1,42 @@
-# Welcome to your Expo app 👋
+# Hybrid Race Lab
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Open-source performance intelligence for HYROX-style hybrid racing and endurance athletes.
 
-## Get started
+## What it should answer
+Instead of giving an athlete another dashboard full of numbers, Hybrid Race Lab should answer a narrower question:
 
-1. Install dependencies
+> **Where am I actually losing time, how much is plausibly recoverable, and what race/training change has the highest expected payoff?**
 
-   ```bash
-   npm install
-   ```
+## V0
+- Ingest race splits from CSV/JSON/manual entry.
+- Represent running, stations and transitions as typed segments.
+- Decompose total race time and rank bottlenecks.
+- Compare segments against a chosen baseline or cohort without pretending correlation proves causation.
+- Simulate target finish times and pacing trade-offs.
+- Generate a reproducible race debrief with assumptions and confidence labels.
+- Export shareable summaries for athletes, coaches and creators.
 
-2. Start the app
+The initial schema is optimized for HYROX-style run/station/transition races, but the core model should remain extensible to running, triathlon and other endurance formats.
 
-   ```bash
-   npx expo start
-   ```
+## Design rules
+1. **Evidence before advice.** Keep measured race data separate from inferred explanations.
+2. **No fake precision.** Unknown recovery, physiology or causal effects stay unknown unless supported by data.
+3. **Local-first where practical.** Athletes should be able to analyze exported data without surrendering an entire training history to a hosted service.
+4. **Generic public engine.** No proprietary private athlete data or private strategy engines belong in this repository.
+5. **Reproducible analysis.** Every debrief should be reproducible from its input data, configuration and code version.
 
-In the output, you'll find options to open the app in a
+## Example future output
+```text
+Total: 1:05:12
+Largest relative losses:
+1. Wall balls        +02:04 vs baseline
+2. Run km 6          +01:18
+3. Transition total  +00:57
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+Target 59:59 requires ~313 s improvement.
+Current modeled recoverable time: 274–356 s depending on assumptions.
+Assumptions most capable of changing the conclusion: run-decay model, wall-ball baseline, transition normalization.
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Status
+Early research/build stage. No performance claims are proven yet.
