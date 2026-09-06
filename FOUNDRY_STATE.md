@@ -18,17 +18,17 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 - Deterministic fixtures and tests
 
 ## 2026-09-06 foundry cycle
-Objective: establish and cheaply verify the first framework-agnostic analytical kernel before adding UI work.
+Objective: establish and cheaply verify the framework-agnostic analytical kernel, then add strict ingestion without UI coupling.
 Branch: `foundry/core-race-analysis-v0`.
-Implementation head before this state update: `19137920d7faf6576805f76c9be592420a7d068e`.
-Files: `src/core/race.ts`, `src/core/analysis.ts`, `src/core/analysis.test.ts`, `scripts/run-core-checks.mjs`, `package.json`.
-Implemented: typed race/baseline schemas; finite/non-negative validation; total-time decomposition; baseline-normalized segment deltas; deterministic bottleneck ranking using an explicit recoverable-time assumption; target-time simulation; synthetic deterministic fixtures; dependency-free Node invariant runner exposed as `npm run test:core`.
-Evidence boundary: fixtures are SYNTHETIC and contain no athlete claims. The recoverable fraction is an explicit scenario parameter, not a causal training claim.
-Validation: the runner checks five deterministic invariant groups and requires only Node. It is committed but has not yet executed on a runner in this cycle, so runtime correctness remains NOT YET PROVEN and no green result is claimed.
-Compute discipline: no PR was opened solely to trigger hosted CI.
-Blocker: execute the core check command in a real runner.
-Next step: after a successful core execution, add strict CSV/JSON ingestion and malformed-input fixtures.
-Claim status: analytical definitions and low-cost verification harness SUPPORTED; runtime correctness NOT YET PROVEN.
+Implementation head before this state update: `61ca2da07f95db9b4f1d46b36ba6b632da33a1a5`.
+Files: `src/core/race.ts`, `src/core/analysis.ts`, `src/core/analysis.test.ts`, `scripts/run-core-checks.mjs`, `src/core/ingest.ts`, `src/core/ingest.test.ts`, `package.json`.
+Implemented: typed race/baseline schemas; finite/non-negative validation; total-time decomposition; baseline-normalized segment deltas; deterministic bottleneck ranking using an explicit recoverable-time assumption; target-time simulation; synthetic deterministic fixtures; dependency-free Node invariant runner; strict JSON ingestion that rejects malformed JSON, unknown fields, empty segment sets, invalid segment/evidence enums, duplicate IDs and invalid durations.
+Evidence boundary: fixtures are SYNTHETIC and contain no athlete claims. Measured vs synthetic provenance is mandatory at segment ingestion. Recoverable fraction is an explicit scenario parameter, not a causal training claim.
+Validation: the dependency-free five-invariant arithmetic fixture has been independently reproduced in the Foundry execution environment (520 s total, deltas 20/60/5, recoverable 10/30/2.5, max opportunity 30 s, simulated finish 490 s). This supports the fixture arithmetic but does not prove the TypeScript runtime path. JSON ingestion tests are committed but not yet executed by repository CI, so parser runtime correctness remains NOT YET PROVEN.
+Compute discipline: no PR or hosted workflow was triggered solely to manufacture a green badge.
+Blocker: execute TypeScript core/parser tests in a real repo runner without spending unnecessary hosted compute.
+Next step: add strict CSV ingestion sharing the same validation boundary, then expose a cheap executable TypeScript test path or run the existing suite when a local runner is available.
+Claim status: analytical definitions and fixture arithmetic SUPPORTED; JSON ingestion architecture SUPPORTED; TypeScript runtime correctness NOT YET PROVEN.
 
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
