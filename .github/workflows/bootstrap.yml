@@ -1,0 +1,83 @@
+name: Bootstrap Expo app
+
+on:
+  push:
+    paths:
+      - 'bootstrap/project.json'
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Generate Expo SDK 57 app
+        run: |
+          rm -rf "$RUNNER_TEMP/generated-app"
+          npx create-expo-app@latest "$RUNNER_TEMP/generated-app" --template default@sdk-57 --yes --no-agents-md
+          rsync -a --exclude '.git' --exclude 'node_modules' --exclude '.github' "$RUNNER_TEMP/generated-app/" ./
+      - name: Apply app identity and mobile defaults
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const metadata = JSON.parse(fs.readFileSync('bootstrap/project.json', 'utf8'));
+          const p = 'app.json';
+          const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+          data.expo.name = metadata.displayName;
+          data.expo.slug = metadata.slug;
+          data.expo.scheme = metadata.slug;
+          data.expo.runtimeVersion = { policy: 'fingerprint' };
+          data.expo.android = { ...(data.expo.android || {}), package: metadata.bundleIdentifier };
+          data.expo.ios = { ...(data.expo.ios || {}), bundleIdentifier: metadata.bundleIdentifier };
+          fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          npm ci
+          npx expo install expo-dev-client expo-updates
+          cat > eas.json <<'JSON'
+          {
+            "cli": { "appVersionSource": "remote" },
+            "build": {
+              "development": { "developmentClient": true, "distribution": "internal", "channel": "development" },
+              "preview": { "distribution": "internal", "channel": "preview" },
+              "production": { "autoIncrement": true, "channel": "production" }
+            }
+          }
+          JSON
+      - name: Add EAS update workflow
+        run: |
+          mkdir -p .eas/workflows
+          cat > .eas/workflows/publish-preview-update.yml <<'YAML'
+          name: Publish preview update
+          on:
+            push:
+              branches: ['*']
+          jobs:
+            publish_preview_update:
+              name: Publish preview update
+              type: update
+              params:
+                branch: ${{ github.ref_name || 'test' }}
+          YAML
+      - name: Commit generated mobile kernel
+        shell: bash
+        run: |
+          git config user.name 'cosmos-repo-factory'
+          git config user.email 'repo-factory@users.noreply.github.com'
+          paths=(app app.json assets components constants hooks scripts package.json package-lock.json tsconfig.json eslint.config.js .gitignore README.md eas.json .eas/workflows/publish-preview-update.yml)
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then
+              git add -- "$path"
+            fi
+          done
+          if git diff --cached --quiet; then
+            echo 'Nothing to commit'
+          else
+            git commit -m 'chore: bootstrap Expo mobile kernel'
+            git push
+          fi

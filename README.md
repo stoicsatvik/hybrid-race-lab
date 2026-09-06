@@ -1,2 +1,11 @@
-# hybrid-race-lab
-Open-source performance intelligence for HYROX-style hybrid racing and endurance athletes: ingest race splits and training logs, identify bottlenecks, benchmark performance, simulate pacing and target times, and generate reproducible race debriefs.
+# Hybrid Race Lab
+
+Bootstrapped by Cosmos Repo Factory.
+
+- Owner: `stoicsatvik`
+- Kind: `project`
+- Mobile stack: Expo SDK 57 + React Native + Expo Router
+- CI: seeded directly by Cosmos Repo Factory
+- EAS: `EXPO_TOKEN` is injected automatically; the first cloud build runs `eas init --force --non-interactive` before starting the build
+
+Factory slug: `hybrid-race-lab`

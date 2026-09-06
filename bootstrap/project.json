@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "createdBy": "cosmos-repo-factory",
+  "kind": "project",
+  "owner": "stoicsatvik",
+  "slug": "hybrid-race-lab",
+  "displayName": "Hybrid Race Lab",
+  "bundleIdentifier": "com.stoicsatvik.hybridracelab",
+  "expoSdk": 57,
+  "eas": {
+    "status": "token_injected_project_init_on_first_build"
+  }
+}
