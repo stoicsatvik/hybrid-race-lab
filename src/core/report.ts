@@ -7,6 +7,15 @@ export interface BaselineSensitivityPoint {
   topRecoverableSeconds: number;
 }
 
+export interface TargetFeasibility {
+  targetSeconds: number;
+  requiredSavingsSeconds: number;
+  availableSavingsSeconds: number;
+  feasible: boolean;
+  selectedSavings: Readonly<Record<string, number>>;
+  projectedFinishSeconds: number;
+}
+
 export interface RaceDebrief {
   raceId: string;
   baselineId: string;
@@ -42,6 +51,36 @@ export function baselineSensitivity(
       topRecoverableSeconds: top?.recoverableSeconds ?? 0,
     };
   });
+}
+
+export function targetFeasibility(
+  race: RaceRecord,
+  baseline: RaceBaseline,
+  targetSeconds: number,
+  recoverableFraction = 0.5,
+): TargetFeasibility {
+  if (!Number.isFinite(targetSeconds) || targetSeconds < 0) throw new Error("targetSeconds must be finite and non-negative");
+  const total = totalTimeSeconds(race);
+  const required = Math.max(0, total - targetSeconds);
+  const ranked = rankBottlenecks(race, baseline, recoverableFraction);
+  const available = ranked.reduce((sum, item) => sum + item.recoverableSeconds, 0);
+  let remaining = required;
+  const selected: Record<string, number> = {};
+  for (const item of ranked) {
+    if (remaining <= 0) break;
+    const saving = Math.min(item.recoverableSeconds, remaining);
+    if (saving > 0) selected[item.segmentId] = saving;
+    remaining -= saving;
+  }
+  const achieved = required - Math.max(0, remaining);
+  return {
+    targetSeconds,
+    requiredSavingsSeconds: required,
+    availableSavingsSeconds: available,
+    feasible: available >= required,
+    selectedSavings: selected,
+    projectedFinishSeconds: total - achieved,
+  };
 }
 
 export function buildRaceDebrief(
