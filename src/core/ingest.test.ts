@@ -1,14 +1,33 @@
-import { parseRaceCsv, parseRaceJson } from "./ingest";
+import { parseRaceCsv, parseRaceJson, parseRaceManual } from "./ingest";
+
+const manualValid = {
+  id: "synthetic-001",
+  eventLabel: "Synthetic hybrid fixture",
+  segments: [
+    { id: "run-1", label: "Run 1", kind: "run", durationSeconds: 300, evidence: "synthetic" },
+    { id: "station-1", label: "Station 1", kind: "station", durationSeconds: 180, evidence: "synthetic" },
+  ],
+};
+
+describe("parseRaceManual", () => {
+  it("accepts a strict manual record without serialization", () => {
+    const race = parseRaceManual(manualValid);
+    expect(race.id).toBe("synthetic-001");
+    expect(race.segments).toHaveLength(2);
+  });
+
+  it("rejects arrays and null as race records", () => {
+    expect(() => parseRaceManual([])).toThrow("must be an object");
+    expect(() => parseRaceManual(null)).toThrow("must be an object");
+  });
+  it("rejects unknown fields", () => expect(() => parseRaceManual({ ...manualValid, secret: true })).toThrow("unknown field"));
+  it("rejects empty segments", () => expect(() => parseRaceManual({ ...manualValid, segments: [] })).toThrow("non-empty array"));
+  it("rejects invalid provenance", () => expect(() => parseRaceManual({ ...manualValid, segments: [{ ...manualValid.segments[0], evidence: "inferred" }] })).toThrow("evidence is invalid"));
+  it("rejects duplicate ids through canonical validation", () => expect(() => parseRaceManual({ ...manualValid, segments: [manualValid.segments[0], manualValid.segments[0]] })).toThrow("duplicate segment id"));
+});
 
 describe("parseRaceJson", () => {
-  const valid = JSON.stringify({
-    id: "synthetic-001",
-    eventLabel: "Synthetic hybrid fixture",
-    segments: [
-      { id: "run-1", label: "Run 1", kind: "run", durationSeconds: 300, evidence: "synthetic" },
-      { id: "station-1", label: "Station 1", kind: "station", durationSeconds: 180, evidence: "synthetic" },
-    ],
-  });
+  const valid = JSON.stringify(manualValid);
 
   it("accepts a strict synthetic race record", () => {
     const race = parseRaceJson(valid);
