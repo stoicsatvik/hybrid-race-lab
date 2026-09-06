@@ -18,15 +18,17 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 - Deterministic fixtures and tests
 
 ## 2026-09-06 foundry cycle
-Objective: establish the first framework-agnostic analytical kernel before adding UI work.
+Objective: establish and cheaply verify the first framework-agnostic analytical kernel before adding UI work.
 Branch: `foundry/core-race-analysis-v0`.
-Files: `src/core/race.ts`, `src/core/analysis.ts`, `src/core/analysis.test.ts`.
-Implemented: typed race/baseline schemas; finite/non-negative validation; total-time decomposition; baseline-normalized segment deltas; deterministic bottleneck ranking using an explicit recoverable-time assumption; target-time simulation; synthetic deterministic fixtures.
+Implementation head before this state update: `19137920d7faf6576805f76c9be592420a7d068e`.
+Files: `src/core/race.ts`, `src/core/analysis.ts`, `src/core/analysis.test.ts`, `scripts/run-core-checks.mjs`, `package.json`.
+Implemented: typed race/baseline schemas; finite/non-negative validation; total-time decomposition; baseline-normalized segment deltas; deterministic bottleneck ranking using an explicit recoverable-time assumption; target-time simulation; synthetic deterministic fixtures; dependency-free Node invariant runner exposed as `npm run test:core`.
 Evidence boundary: fixtures are SYNTHETIC and contain no athlete claims. The recoverable fraction is an explicit scenario parameter, not a causal training claim.
-Validation: source and deterministic checks are committed, but checks are NOT YET EXECUTED in CI because opening a PR would trigger hosted CI for all PR paths. No green result is claimed.
-Blocker: install/run the deterministic checks locally or via a deliberately approved CI run, then add ingestion parsers.
-Next step: make deterministic checks executable through a low-cost test script, validate them, then add CSV/JSON ingestion with strict schema errors.
-Claim status: core architecture SUPPORTED by explicit deterministic definitions; runtime correctness NOT YET PROVEN.
+Validation: the runner checks five deterministic invariant groups and requires only Node. It is committed but has not yet executed on a runner in this cycle, so runtime correctness remains NOT YET PROVEN and no green result is claimed.
+Compute discipline: no PR was opened solely to trigger hosted CI.
+Blocker: execute the core check command in a real runner.
+Next step: after a successful core execution, add strict CSV/JSON ingestion and malformed-input fixtures.
+Claim status: analytical definitions and low-cost verification harness SUPPORTED; runtime correctness NOT YET PROVEN.
 
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
