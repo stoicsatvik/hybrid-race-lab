@@ -65,3 +65,49 @@ export function ingestJsonRace(json: string): RaceRecord {
   validateRace(race);
   return race;
 }
+
+function parseCsvRows(csv: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let quoted = false;
+  for (let i = 0; i < csv.length; i += 1) {
+    const char = csv[i];
+    if (quoted) {
+      if (char === '"') {
+        if (csv[i + 1] === '"') { field += '"'; i += 1; }
+        else quoted = false;
+      } else field += char;
+    } else if (char === '"') {
+      if (field.length !== 0) throw new Error('invalid CSV quoting');
+      quoted = true;
+    } else if (char === ',') {
+      row.push(field); field = '';
+    } else if (char === '\n') {
+      row.push(field); rows.push(row); row = []; field = '';
+    } else if (char !== '\r') field += char;
+  }
+  if (quoted) throw new Error('unterminated CSV quote');
+  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+export function ingestCsvRace(raceId: string, csv: string): RaceRecord {
+  const rows = parseCsvRows(csv);
+  if (rows.length < 2) throw new Error('CSV must contain header and at least one segment');
+  const expected = ['id', 'kind', 'label', 'durationSeconds'];
+  if (rows[0].length !== expected.length || rows[0].some((value, index) => value !== expected[index])) {
+    throw new Error('CSV header must be id,kind,label,durationSeconds');
+  }
+  const segments = rows.slice(1).map((fields, index): RaceSegment => {
+    if (fields.length !== 4) throw new Error(`CSV row ${index + 2} must contain 4 fields`);
+    const [id, kindValue, label, durationValue] = fields;
+    if (!id) throw new Error(`CSV row ${index + 2} id must not be empty`);
+    const durationSeconds = Number(durationValue);
+    if (durationValue.trim() === '' || !Number.isFinite(durationSeconds)) throw new Error(`CSV row ${index + 2} durationSeconds must be numeric`);
+    return { id, kind: parseKind(kindValue), label: label || id, durationSeconds };
+  });
+  const race: RaceRecord = { id: raceId, segments };
+  validateRace(race);
+  return race;
+}
