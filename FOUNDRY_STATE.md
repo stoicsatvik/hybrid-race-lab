@@ -19,21 +19,22 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 
 ## Current challenger
 - Branch: `foundry/v0-core-analysis`; draft PR #1; never merge without explicit approval.
-- Framework-agnostic race schema: `792136d2a1e56560d33b0b0d5c546b0ef2558e9b`.
-- Deterministic decomposition, baseline-delta/recoverable-time ranking, and target-time simulation: `2c13446f41c8d8fcdadcf45a98922f0112210c1f`.
-- Measured durations are kept distinct from the explicit `recoverableFraction` scenario assumption; the core makes no causal training or medical claim.
-- CI falsification harness was added, but run `34148115658` failed before tests because package.json added Jest dependencies without updating package-lock.json. This remains preserved as a reproducibility failure, not a core-analysis failure.
-- Dependency-free repair restored lock compatibility. Run `34151948824` then proved `npm ci`, Expo Doctor, and repository-wide TypeScript verification all pass, but `npm run test:core` failed before contract execution because TypeScript 6 rejects deprecated `moduleResolution=node10` inherited from the test config's `Node` alias.
-- Commit `02afbe3e583da38b0c1dc2c67c2a18f975920474` migrates the isolated core-test compiler to matched `module: Node16` + `moduleResolution: Node16` instead of suppressing the deprecation. Exact-head execution remains the gate.
+- V0 analysis core and deterministic contracts are SUPPORTED on committed synthetic cases after successful Node16 harness execution.
+- Manual + JSON canonical ingestion at `7afc9d2d885af4719505bf96ffdfc1088a10e8a4` is SUPPORTED by workflow run `34163553635`: dependency install, Expo Doctor, repository TypeScript, and `test:core` all completed successfully.
+- CSV challenger: `46a196f821ba2741191f65c58b35cd11f312ab1a` adds dependency-free RFC4180-style essentials needed by race splits: exact header, commas and escaped quotes inside quoted labels, CRLF tolerance, numeric duration parsing, row-order preservation, canonical label fallback, and fail-closed malformed input.
+- CSV falsification contracts: `ab026b4a4b428c96cdc395f52d65ff3f8cd2e568` require manual/JSON/CSV canonical equivalence and attack malformed headers, nonnumeric durations, invalid kinds, duplicate IDs, unterminated quotes, and extra columns.
+- Measured durations remain distinct from explicit scenario assumptions; no causal training or medical claim is inferred.
+
+## Preserved failures
+- Run `34148115658`: REJECTED reproducibility configuration because package.json/package-lock.json were out of sync; tests never executed.
+- Run `34151948824`: dependency install, Expo Doctor and repository TypeScript passed, but the isolated harness was REJECTED because TypeScript 6 rejects deprecated `moduleResolution=node10`; contracts never executed.
 
 ## Validation / claim boundary
-- Core architecture: **SUPPORTED** by inspectable deterministic pure functions and fail-closed input validation.
-- CI/reproducibility at `4cfbc4ad...`: **REJECTED**. `npm ci` failed because package.json/package-lock.json were out of sync; analysis tests never executed.
-- Dependency installation and general project verification at run `34151948824`: **SUPPORTED** (`npm ci`, Expo Doctor 21/21, and `npx tsc --noEmit` passed).
-- Core-test compiler configuration at pre-fix head `57449ab...`: **REJECTED** under TypeScript 6 because `moduleResolution=node10` is deprecated and treated as an error.
-- Node16 compiler-config challenger at `02afbe3e...`: **NOT YET PROVEN** until exact-head CI executes.
-- Core analysis contracts themselves remain **NOT YET PROVEN** because the failed run did not reach JavaScript contract execution.
-- Bottleneck ranking represents baseline-relative recoverable-time scenarios only; causal explanations of why a segment was slow are **NOT YET PROVEN** and intentionally absent.
+- V0 deterministic analysis core: **SUPPORTED** on committed synthetic contracts.
+- Manual + JSON ingestion: **SUPPORTED** on committed synthetic contracts at run `34163553635`.
+- CSV ingestion architecture/contracts at `ab026b4a...`: **NOT YET PROVEN** until exact-head CI executes.
+- Real-athlete generality: **NOT YET PROVEN**.
+- Causal explanations of why a segment was slow: **NOT YET PROVEN** and intentionally absent.
 - No athlete/private data is committed; public boundary remains clean.
 
 ## Acceptance
@@ -43,6 +44,6 @@ Given one race and one comparison baseline, the tool must reproducibly explain w
 Use public or synthetic HYROX-style split examples only. Do not fabricate athlete performance data or claim causal training advice from race splits alone.
 
 ## Highest-EV next move
-Obtain exact-head CI for the Node16 core-test compiler repair. If compilation clears, preserve any actual deterministic contract failure as the first semantic counterexample. Only after `npm ci`, TypeScript verification, core-test compilation, and the contracts all pass should CSV/JSON/manual ingestion become eligible.
+Execute exact-head CI for the CSV challenger. Preserve any parser/semantic failure as a counterexample. A clean pass completes the V0 canonical input boundary and unlocks a deterministic exportable debrief; do not add UI before that gate.
 
-Status: ACTIVE / NOT YET PROVEN
+Status: ACTIVE / CSV NOT YET PROVEN
