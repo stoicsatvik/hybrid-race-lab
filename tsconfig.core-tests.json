@@ -12,6 +12,8 @@
   "include": [
     "src/core/race.ts",
     "src/core/analysis.ts",
-    "src/core/analysis.contracts.ts"
+    "src/core/analysis.contracts.ts",
+    "src/core/ingest.ts",
+    "src/core/ingest.contracts.ts"
   ]
 }
