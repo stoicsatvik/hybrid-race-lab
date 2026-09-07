@@ -6,15 +6,18 @@ on:
     branches: [main]
     paths:
       - 'app/**'
+      - 'src/core/**'
       - 'app.json'
       - 'package.json'
       - 'package-lock.json'
       - 'tsconfig.json'
+      - 'jest.config.cjs'
       - 'eas.json'
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
@@ -24,3 +27,4 @@ jobs:
       - run: npm ci
       - run: npx expo-doctor
       - run: npx tsc --noEmit
+      - run: npm run test:core
