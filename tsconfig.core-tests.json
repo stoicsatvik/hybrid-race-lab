@@ -14,6 +14,8 @@
     "src/core/analysis.ts",
     "src/core/analysis.contracts.ts",
     "src/core/ingest.ts",
-    "src/core/ingest.contracts.ts"
+    "src/core/ingest.contracts.ts",
+    "src/core/debrief.ts",
+    "src/core/debrief.contracts.ts"
   ]
 }
