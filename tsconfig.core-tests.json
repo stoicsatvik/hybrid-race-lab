@@ -16,6 +16,8 @@
     "src/core/ingest.ts",
     "src/core/ingest.contracts.ts",
     "src/core/debrief.ts",
-    "src/core/debrief.contracts.ts"
+    "src/core/debrief.contracts.ts",
+    "src/core/sensitivity.ts",
+    "src/core/sensitivity.contracts.ts"
   ]
 }
