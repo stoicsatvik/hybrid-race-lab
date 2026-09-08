@@ -14,8 +14,17 @@ export interface SensitivityScenarioResult {
   projectedSeconds: number;
 }
 
+export interface SegmentRankStability {
+  segmentId: string;
+  bestRank: number;
+  worstRank: number;
+  topCount: number;
+  topShare: number;
+}
+
 export interface SensitivityReport {
   scenarios: readonly SensitivityScenarioResult[];
+  segmentRankStability: readonly SegmentRankStability[];
   topBottleneckStable: boolean;
   orderingStable: boolean;
   targetSeconds?: number;
@@ -50,10 +59,23 @@ export function analyzeSensitivity(
     };
   });
 
+  const segmentRankStability = race.segments.map((segment) => {
+    const ranks = results.map((result) => result.bottleneckOrder.indexOf(segment.id) + 1);
+    const topCount = ranks.filter((rank) => rank === 1).length;
+    return {
+      segmentId: segment.id,
+      bestRank: Math.min(...ranks),
+      worstRank: Math.max(...ranks),
+      topCount,
+      topShare: topCount / results.length,
+    };
+  }).sort((a, b) => b.topShare - a.topShare || a.bestRank - b.bestRank || a.segmentId.localeCompare(b.segmentId));
+
   const firstOrder = results[0].bottleneckOrder.join('\u0000');
   const firstTop = results[0].topBottleneckId;
   const report: SensitivityReport = {
     scenarios: results,
+    segmentRankStability,
     topBottleneckStable: results.every((result) => result.topBottleneckId === firstTop),
     orderingStable: results.every((result) => result.bottleneckOrder.join('\u0000') === firstOrder),
   };
