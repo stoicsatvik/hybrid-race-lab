@@ -40,7 +40,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:core": "rm -rf .core-test-dist && tsc -p tsconfig.core-tests.json && node .core-test-dist/analysis.contracts.js && node .core-test-dist/ingest.contracts.js"
+    "test:core": "rm -rf .core-test-dist && tsc -p tsconfig.core-tests.json && node .core-test-dist/analysis.contracts.js && node .core-test-dist/ingest.contracts.js && node .core-test-dist/debrief.contracts.js"
   },
   "private": true
 }
