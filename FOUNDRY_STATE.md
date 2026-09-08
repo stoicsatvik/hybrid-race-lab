@@ -17,13 +17,13 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 - Exportable race debrief
 - Deterministic fixtures and tests
 
-## Current challenger
+## Current champion
 - Branch: `foundry/v0-core-analysis`; draft PR #1; never merge without explicit approval.
-- V0 analysis core and deterministic contracts are SUPPORTED on committed synthetic cases after successful Node16 harness execution.
-- Manual + JSON canonical ingestion at `7afc9d2d885af4719505bf96ffdfc1088a10e8a4` is SUPPORTED by workflow run `34163553635`: dependency install, Expo Doctor, repository TypeScript, and `test:core` all completed successfully.
-- CSV challenger: `46a196f821ba2741191f65c58b35cd11f312ab1a` adds dependency-free RFC4180-style essentials needed by race splits: exact header, commas and escaped quotes inside quoted labels, CRLF tolerance, numeric duration parsing, row-order preservation, canonical label fallback, and fail-closed malformed input.
-- CSV falsification contracts: `ab026b4a4b428c96cdc395f52d65ff3f8cd2e568` require manual/JSON/CSV canonical equivalence and attack malformed headers, nonnumeric durations, invalid kinds, duplicate IDs, unterminated quotes, and extra columns.
-- Measured durations remain distinct from explicit scenario assumptions; no causal training or medical claim is inferred.
+- V0 analysis core and deterministic contracts: **SUPPORTED** on committed synthetic cases.
+- Manual + JSON canonical ingestion at `7afc9d2d885af4719505bf96ffdfc1088a10e8a4`: **SUPPORTED** by workflow run `34163553635`.
+- CSV canonical ingestion: **SUPPORTED** by successful exact-head CI before the debrief increment; contracts require manual/JSON/CSV equivalence and malformed-input rejection.
+- Deterministic exportable debrief at `a0849181dd1b7e55cf498f3bad27a725bbb8d757`: **SUPPORTED** by workflow run `34173731537`; dependency install, Expo Doctor, repository TypeScript, and `test:core` all completed successfully.
+- Debrief keeps measured decomposition, supplied-baseline comparison, and explicit target scenarios separate; it does not infer causal training, fitness, or medical explanations.
 
 ## Preserved failures
 - Run `34148115658`: REJECTED reproducibility configuration because package.json/package-lock.json were out of sync; tests never executed.
@@ -31,8 +31,8 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 
 ## Validation / claim boundary
 - V0 deterministic analysis core: **SUPPORTED** on committed synthetic contracts.
-- Manual + JSON ingestion: **SUPPORTED** on committed synthetic contracts at run `34163553635`.
-- CSV ingestion architecture/contracts at `ab026b4a...`: **NOT YET PROVEN** until exact-head CI executes.
+- Manual + JSON + CSV canonical ingestion: **SUPPORTED** on committed deterministic contracts.
+- Exportable debrief: **SUPPORTED** on committed deterministic contracts at run `34173731537`.
 - Real-athlete generality: **NOT YET PROVEN**.
 - Causal explanations of why a segment was slow: **NOT YET PROVEN** and intentionally absent.
 - No athlete/private data is committed; public boundary remains clean.
@@ -44,6 +44,6 @@ Given one race and one comparison baseline, the tool must reproducibly explain w
 Use public or synthetic HYROX-style split examples only. Do not fabricate athlete performance data or claim causal training advice from race splits alone.
 
 ## Highest-EV next move
-Execute exact-head CI for the CSV challenger. Preserve any parser/semantic failure as a counterexample. A clean pass completes the V0 canonical input boundary and unlocks a deterministic exportable debrief; do not add UI before that gate.
+Freeze the current V0 pure-function core as champion. Add a deterministic sensitivity layer that sweeps explicit baseline/recoverability assumptions and reports whether bottleneck ordering and target feasibility are stable across the declared range. Require matched synthetic cases and preserve rank reversals as evidence rather than hiding them. Do not add UI before this gate.
 
-Status: ACTIVE / CSV NOT YET PROVEN
+Status: ACTIVE / V0 CORE SUPPORTED / SENSITIVITY NOT YET PROVEN
