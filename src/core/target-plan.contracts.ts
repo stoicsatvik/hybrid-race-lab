@@ -1,6 +1,20 @@
-import assert from 'node:assert/strict';
 import { RaceRecord } from './race';
 import { enumerateTargetPlans } from './target-plan';
+
+function equal(actual: unknown, expected: unknown, label: string): void {
+  const a = JSON.stringify(actual);
+  const e = JSON.stringify(expected);
+  if (a !== e) throw new Error(`${label}: expected ${e}, got ${a}`);
+}
+
+function throws(fn: () => unknown, label: string): void {
+  try {
+    fn();
+  } catch {
+    return;
+  }
+  throw new Error(`${label}: expected an error`);
+}
 
 const race: RaceRecord = {
   id: 'synthetic-target-race',
@@ -21,20 +35,20 @@ const options = [
 
 const first = enumerateTargetPlans(race, 1140, options);
 const second = enumerateTargetPlans(race, 1140, options);
-assert.deepEqual(first, second, 'target plans must be deterministic');
-assert.deepEqual(first.map((plan) => plan.segmentIds), [
+equal(first, second, 'target plans must be deterministic');
+equal(first.map((plan) => plan.segmentIds), [
   ['run-1', 'run-2'],
-]);
-assert.equal(first[0].savedSeconds, 65);
-assert.equal(first[0].projectedSeconds, 1135);
-assert.equal(first[0].excessSavingsSeconds, 5);
+], 'minimal-cardinality feasible plan');
+equal(first[0].savedSeconds, 65, 'saved seconds');
+equal(first[0].projectedSeconds, 1135, 'projected seconds');
+equal(first[0].excessSavingsSeconds, 5, 'excess savings');
 
-assert.deepEqual(enumerateTargetPlans(race, 1100, options), [], 'impossible target must return no plan');
-assert.deepEqual(enumerateTargetPlans(race, 1200, options), [{
+equal(enumerateTargetPlans(race, 1100, options), [], 'impossible target must return no plan');
+equal(enumerateTargetPlans(race, 1200, options), [{
   segmentIds: [], improvementsSeconds: {}, savedSeconds: 0, projectedSeconds: 1200, excessSavingsSeconds: 0,
-}]);
-assert.throws(() => enumerateTargetPlans(race, 1140, [...options, { segmentId: 'run-1', seconds: 1 }]));
-assert.throws(() => enumerateTargetPlans(race, 1140, [{ segmentId: 'missing', seconds: 1 }]));
-assert.throws(() => enumerateTargetPlans(race, 1140, [{ segmentId: 'row', seconds: 301 }]));
+}], 'already-achieved target');
+throws(() => enumerateTargetPlans(race, 1140, [...options, { segmentId: 'run-1', seconds: 1 }]), 'duplicate segment option');
+throws(() => enumerateTargetPlans(race, 1140, [{ segmentId: 'missing', seconds: 1 }]), 'unknown segment option');
+throws(() => enumerateTargetPlans(race, 1140, [{ segmentId: 'row', seconds: 301 }]), 'impossible segment saving');
 
 console.log('target-plan contracts passed');
