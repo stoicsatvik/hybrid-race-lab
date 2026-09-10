@@ -29,9 +29,11 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 - Run `34148115658`: REJECTED reproducibility configuration because package.json/package-lock.json were out of sync; tests never executed.
 - Run `34151948824`: dependency install, Expo Doctor and repository TypeScript passed, but the isolated harness was REJECTED because TypeScript 6 rejects deprecated `moduleResolution=node10`; contracts never executed.
 - Run `34437630234` on target-plan head `ce62e9a5c34d321c540460afef1e56d1c39bdbe6`: CI failed before TypeScript or `test:core` because Expo Doctor detected four SDK patch-version mismatches (`@expo/ui`, `expo`, `expo-glass-effect`, `expo-router`). This is an app-environment health failure, not evidence for or against the target-plan challenger.
+- Run `34450278691` on `1e64a18273879684fe5087140d654a84f351f911`: the isolated core job successfully ran the established analysis/ingest/debrief/sensitivity contracts, then failed because `.core-test-dist/target-plan.contracts.js` did not exist. Root cause: `tsconfig.core-tests.json` omitted both `target-plan.ts` and `target-plan.contracts.ts` from its explicit include list. This is harness evidence, not algorithm evidence.
 
 ## Validation / claim boundary
 - V0 deterministic analysis, canonical ingestion, exportable debrief, and declared-scenario sensitivity: **SUPPORTED** on committed deterministic synthetic contracts.
+- CI evidence isolation: **SUPPORTED** by run `34450278691`, which executed core contracts independently while app health remained separately red.
 - Target-plan enumerator: **NOT YET PROVEN** until its deterministic contracts execute successfully at an exact head.
 - Expo SDK dependency health: **BLOCKED** on patch-version drift until dependencies are deliberately reconciled; do not silently ignore the warning.
 - Real-athlete generality: **NOT YET PROVEN**.
@@ -39,7 +41,9 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 - No athlete/private data is committed; public boundary remains clean.
 
 ## CI evidence isolation
-As of `7d1981a42b5884ca167561239e2131fc36fe6289`, CI separates `core-acceptance` from `app-health`. Core deterministic contracts can now produce independent evidence even when Expo SDK health is red; app-health remains blocking/visible and is not suppressed.
+As of `7d1981a42b5884ca167561239e2131fc36fe6289`, CI separates `core-acceptance` from `app-health`. Core deterministic contracts can produce independent evidence even when Expo SDK health is red; app-health remains blocking/visible and is not suppressed.
+
+As of `e005b5222cbacdf685c331f23b3fe2c1c15756a1`, the isolated TypeScript harness explicitly includes `target-plan.ts` and `target-plan.contracts.ts`, closing the missing-emission defect exposed by run `34450278691`. This harness fix is **NOT YET PROVEN** until exact-head CI executes.
 
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
@@ -51,6 +55,6 @@ Use public or synthetic HYROX-style split examples only. Do not fabricate athlet
 Target-plan enumerator: given a race, target time and explicit per-segment improvement assumptions, enumerate deterministic minimal-cardinality feasible combinations, rank feasible plans by least excess improvement, return no plan for impossible targets, and fail closed on malformed/unsafe search inputs.
 
 ## Highest-EV next move
-Observe exact-head `core-acceptance` on the post-isolation branch. If green, promote the target-plan challenger to SUPPORTED on committed synthetic contracts while keeping Expo app-health separately BLOCKED. Then reconcile Expo patch versions in a dedicated maintenance increment rather than conflating dependency drift with research evidence.
+Observe exact-head `core-acceptance` after the harness include fix. If the target-plan contracts execute and pass, promote the challenger to **SUPPORTED** on committed synthetic contracts. If they execute and fail, preserve the failure and modify the algorithm only in response to that evidence. Keep Expo dependency reconciliation separate.
 
-Status: ACTIVE / V0 CORE SUPPORTED / TARGET-PLAN CHALLENGER NOT YET PROVEN / APP HEALTH BLOCKED
+Status: ACTIVE / V0 CORE SUPPORTED / TARGET-PLAN CHALLENGER NOT YET PROVEN / HARNESS FIX NOT YET PROVEN / APP HEALTH BLOCKED
