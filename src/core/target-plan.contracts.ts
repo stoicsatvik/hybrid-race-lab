@@ -43,7 +43,10 @@ equal(first[0].savedSeconds, 65, 'saved seconds');
 equal(first[0].projectedSeconds, 1135, 'projected seconds');
 equal(first[0].excessSavingsSeconds, 5, 'excess savings');
 
-equal(enumerateTargetPlans(race, 1100, options), [], 'impossible target must return no plan');
+// The declared options can save at most 100 s from this 1200 s race.
+// 1100 s is therefore exactly reachable; 1099 s is the first impossible target.
+equal(enumerateTargetPlans(race, 1100, options).map((plan) => plan.savedSeconds), [100], 'boundary target at maximum declared savings must be feasible');
+equal(enumerateTargetPlans(race, 1099, options), [], 'target beyond maximum declared savings must return no plan');
 equal(enumerateTargetPlans(race, 1200, options), [{
   segmentIds: [], improvementsSeconds: {}, savedSeconds: 0, projectedSeconds: 1200, excessSavingsSeconds: 0,
 }], 'already-achieved target');
