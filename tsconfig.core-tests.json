@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": ".core-test-dist",
+    "rootDir": "src/core"
+  },
+  "include": [
+    "src/core/race.ts",
+    "src/core/analysis.ts",
+    "src/core/analysis.contracts.ts",
+    "src/core/ingest.ts",
+    "src/core/ingest.contracts.ts",
+    "src/core/debrief.ts",
+    "src/core/debrief.contracts.ts",
+    "src/core/sensitivity.ts",
+    "src/core/sensitivity.contracts.ts",
+    "src/core/target-plan.ts",
+    "src/core/target-plan.contracts.ts"
+  ]
+}
