@@ -13,9 +13,22 @@ on:
       - 'tsconfig.json'
       - 'jest.config.cjs'
       - 'eas.json'
+      - '.github/workflows/ci.yml'
 
 jobs:
-  verify:
+  core-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:core
+
+  app-health:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -27,4 +40,3 @@ jobs:
       - run: npm ci
       - run: npx expo-doctor
       - run: npx tsc --noEmit
-      - run: npm run test:core
