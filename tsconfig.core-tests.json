@@ -18,6 +18,8 @@
     "src/core/debrief.ts",
     "src/core/debrief.contracts.ts",
     "src/core/sensitivity.ts",
-    "src/core/sensitivity.contracts.ts"
+    "src/core/sensitivity.contracts.ts",
+    "src/core/target-plan.ts",
+    "src/core/target-plan.contracts.ts"
   ]
 }
