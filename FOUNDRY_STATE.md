@@ -23,17 +23,23 @@ Private: proprietary athlete datasets, private coaching heuristics, private comm
 - Manual + JSON canonical ingestion at `7afc9d2d885af4719505bf96ffdfc1088a10e8a4`: **SUPPORTED** by workflow run `34163553635`.
 - CSV canonical ingestion: **SUPPORTED** by successful exact-head CI before the debrief increment; contracts require manual/JSON/CSV equivalence and malformed-input rejection.
 - Deterministic exportable debrief at `a0849181dd1b7e55cf498f3bad27a725bbb8d757`: **SUPPORTED** by workflow run `34173731537`.
-- Sensitivity layer at `5e25d9f6b1f1d85cf14307e92a76728ab06b80df`: **SUPPORTED** by workflow run `34180267144`; dependency install, Expo Doctor, repository TypeScript, and `test:core` all passed. Contracts preserve deliberate top-bottleneck and full-order rank reversals across declared assumption scenarios.
+- Sensitivity layer at `5e25d9f6b1f1d85cf14307e92a76728ab06b80df`: **SUPPORTED** by workflow run `34180267144`.
 
 ## Preserved failures
 - Run `34148115658`: REJECTED reproducibility configuration because package.json/package-lock.json were out of sync; tests never executed.
 - Run `34151948824`: dependency install, Expo Doctor and repository TypeScript passed, but the isolated harness was REJECTED because TypeScript 6 rejects deprecated `moduleResolution=node10`; contracts never executed.
+- Run `34437630234` on target-plan head `ce62e9a5c34d321c540460afef1e56d1c39bdbe6`: CI failed before TypeScript or `test:core` because Expo Doctor detected four SDK patch-version mismatches (`@expo/ui`, `expo`, `expo-glass-effect`, `expo-router`). This is an app-environment health failure, not evidence for or against the target-plan challenger.
 
 ## Validation / claim boundary
 - V0 deterministic analysis, canonical ingestion, exportable debrief, and declared-scenario sensitivity: **SUPPORTED** on committed deterministic synthetic contracts.
+- Target-plan enumerator: **NOT YET PROVEN** until its deterministic contracts execute successfully at an exact head.
+- Expo SDK dependency health: **BLOCKED** on patch-version drift until dependencies are deliberately reconciled; do not silently ignore the warning.
 - Real-athlete generality: **NOT YET PROVEN**.
 - Causal explanations of why a segment was slow: **NOT YET PROVEN** and intentionally absent.
 - No athlete/private data is committed; public boundary remains clean.
+
+## CI evidence isolation
+As of `7d1981a42b5884ca167561239e2131fc36fe6289`, CI separates `core-acceptance` from `app-health`. Core deterministic contracts can now produce independent evidence even when Expo SDK health is red; app-health remains blocking/visible and is not suppressed.
 
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
@@ -42,9 +48,9 @@ Given one race and one comparison baseline, the tool must reproducibly explain w
 Use public or synthetic HYROX-style split examples only. Do not fabricate athlete performance data or claim causal training advice from race splits alone.
 
 ## Current challenger
-Extend sensitivity from binary stable/unstable flags to deterministic per-segment rank stability summaries: best rank, worst rank, top-scenario count, and top-scenario share. This must expose ambiguity rather than collapse assumption-sensitive rankings into a single recommendation.
+Target-plan enumerator: given a race, target time and explicit per-segment improvement assumptions, enumerate deterministic minimal-cardinality feasible combinations, rank feasible plans by least excess improvement, return no plan for impossible targets, and fail closed on malformed/unsafe search inputs.
 
 ## Highest-EV next move
-Run the exact-head rank-stability contracts. If green, freeze the V0 pure-function analysis substrate and shift allocation to athlete-owned/public example integration or the next OSS stream rather than accumulating UI. If a contract fails, preserve the counterexample and repair semantics before promotion.
+Observe exact-head `core-acceptance` on the post-isolation branch. If green, promote the target-plan challenger to SUPPORTED on committed synthetic contracts while keeping Expo app-health separately BLOCKED. Then reconcile Expo patch versions in a dedicated maintenance increment rather than conflating dependency drift with research evidence.
 
-Status: ACTIVE / V0 CORE SUPPORTED / RANK-STABILITY CHALLENGER NOT YET PROVEN
+Status: ACTIVE / V0 CORE SUPPORTED / TARGET-PLAN CHALLENGER NOT YET PROVEN / APP HEALTH BLOCKED
