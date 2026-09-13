@@ -30,6 +30,20 @@ Blocker: execute TypeScript core/parser/report tests in a real repo runner witho
 Next step: run `npm run test:core` and TypeScript tests on an available runner; if green, add multi-target feasibility tables / baseline perturbation scenarios and only then wire presentation/UI.
 Claim status: analytical definitions and independently reproduced fixture arithmetic SUPPORTED; expanded dependency-free falsification contract SUPPORTED but not executed at this exact commit; JSON/CSV/manual ingestion, debrief/sensitivity, and target-feasibility architecture SUPPORTED; TypeScript runtime correctness NOT YET PROVEN.
 
+## 2026-09-14 foundry cycle
+Objective: convert the stranded core branch into an explicit CI evidence boundary without conflating framework health with kernel correctness.
+Branch: `foundry/core-race-analysis-v0`.
+PR: `#2` (draft, open, unmerged).
+Pre-gate head: `fde17792645560dba1481e10909cabb9698ba2d5`.
+Observed CI: workflow `34787018664` (`Mobile CI`) FAILED at `npx expo-doctor` after `npm ci` succeeded; `npx tsc --noEmit` was skipped. This failure is preserved and is not treated as evidence against or for the mathematical kernel.
+Action: added `.github/workflows/core-ci.yml` as a separate deterministic core gate. It keeps the existing Mobile CI unchanged and runs `npm ci`, `npm run test:core`, and `npx tsc --noEmit` for core/package/TypeScript changes.
+Core-gate creation commit: `7b51cd601f8d2e68e5c8f9a8f26973f5572c9385`.
+Reason for separation: Expo dependency/configuration health and framework-independent analysis correctness are distinct claims. Removing or bypassing `expo-doctor` would weaken the mobile gate; using a dedicated core workflow preserves the failure while allowing the kernel to be falsified independently.
+Validation status: Mobile environment health REJECTED at `fde17792...` by current CI gate. Core deterministic CI at the new gate remains NOT YET PROVEN until an exact-head workflow executes. Existing arithmetic fixture evidence remains SUPPORTED only within its stated synthetic assumptions.
+Safety/privacy: public generic analysis code and synthetic fixtures only; no private athlete data, credentials, proprietary coaching heuristics, or causal training claims.
+Blocker: exact-head execution of Core CI. If it fails, preserve the diagnostic and repair the smallest root cause without weakening either gate.
+Next step: require the dedicated Core CI to pass `npm run test:core` and TypeScript compilation unchanged; only then advance baseline-perturbation / multi-target analysis.
+
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
 
