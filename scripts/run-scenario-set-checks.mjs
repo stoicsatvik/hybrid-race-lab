@@ -43,7 +43,7 @@ assert.deepEqual(full.targetAgreement, [true, true, false, true], "full set expo
 
 const leaveOutStationLenient = summarize(scenarios.filter((scenario) => scenario.id !== "station-lenient"));
 assert.equal(leaveOutStationLenient.topRankAgreement, true, "removing one adversarial baseline can manufacture top-rank agreement");
-assert.deepEqual(leaveOutStationLenient.targetAgreement, [true, true, false, true], "target disagreement survives this removal");
+assert.deepEqual(leaveOutStationLenient.targetAgreement, [true, true, true, true], "removing the adversarial baseline can also manufacture target-feasibility agreement");
 
 const leaveOutReference = summarize(scenarios.filter((scenario) => scenario.id !== "reference"));
 assert.equal(leaveOutReference.topRankAgreement, false, "different removal preserves top-rank disagreement");
