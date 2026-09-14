@@ -50,10 +50,23 @@ Safety/privacy: synthetic fixtures and generic race mathematics only; no private
 Blocker: no blocker for core robustness work. Mobile/Expo health remains independently REJECTED and should not be silently folded into core evidence.
 Next step: implement an explicit baseline-scenario robustness report that exposes top-rank agreement and target-feasibility agreement across preregistered baselines, then falsify it with additional sealed scenarios before any UI work.
 
+## 2026-09-14 foundry cycle: explicit baseline-scenario robustness report
+Objective: turn baseline uncertainty into an auditable output instead of hiding it behind one selected baseline.
+Branch: `foundry/core-race-analysis-v0`.
+PR: `#2` (draft, open, unmerged).
+Implementation commits: `d8bb97ef99b511c2872be13c992964ac8fa9d008` and `400318b4a4d92dbe942af13fed0a8f12a344e6a0`.
+Implemented: `baselineScenarioRobustness` in `src/core/report.ts`, reporting per-baseline top bottleneck, per-target feasibility, distinct top segment IDs, top-rank agreement, per-target agreement counts, and aggregate target-agreement status. Inputs require non-empty baseline/target sets, unique baseline IDs, and a bounded recoverable fraction.
+Sealed synthetic counterexample: across `reference`, `station-lenient`, and `run-lenient` baselines, top-rank agreement is false with distinct tops `station-1` and `run-1`. For targets 500/490/480/470 s, feasible-scenario counts are 3/2/1/0, so agreement is `[true, false, false, true]`. This preserves disagreement explicitly instead of collapsing it into one recommendation.
+Validation contract: dependency-free runner expanded from 12 to 15 invariant groups to mirror these robustness properties. Exact implementation head `400318b4...` had no attached workflow at inspection time, so the new report remains NOT YET PROVEN until Core CI executes unchanged.
+Claim status: prior analytical core remains SUPPORTED at its previously validated heads; baseline-choice invariance remains REJECTED; explicit robustness report at `400318b4...` is NOT YET PROVEN pending exact-head CI; real athlete predictive validity and causal coaching usefulness remain NOT YET PROVEN.
+Safety/privacy: synthetic fixtures and generic race mathematics only; no private athlete data, credentials, proprietary coaching heuristics, or causal training claims.
+Blocker: exact-head Core CI evidence has not attached yet. Mobile/Expo health remains independently REJECTED and is not part of this claim.
+Next step: require exact-head Core CI for the 15-group contract. If green, attack scenario-set sensitivity itself: determine whether adding/removing preregistered baselines changes agreement conclusions and expose coverage limits rather than calling three scenarios exhaustive.
+
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
 
 ## Initial evidence target
 Use public or synthetic HYROX-style split examples only. Do not fabricate athlete performance data or claim causal training advice from race splits alone.
 
-Status: ACTIVE / SUPPORTED CORE, BASELINE ROBUSTNESS REJECTED, REAL-WORLD VALIDITY NOT YET PROVEN
+Status: ACTIVE / SUPPORTED CORE, BASELINE ROBUSTNESS REJECTED, ROBUSTNESS REPORT NOT YET PROVEN, REAL-WORLD VALIDITY NOT YET PROVEN
