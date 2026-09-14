@@ -83,6 +83,54 @@ for (let index = 1; index < targetGrid.length; index += 1) {
   assert.ok(targetGrid[index].projected <= targetGrid[index - 1].projected, "best projected finish must not worsen as target tightens");
 }
 
+function robustnessReport(scenarios, targets, fraction = 0.5) {
+  assert.ok(scenarios.length > 0, "baseline scenarios must not be empty");
+  assert.ok(targets.length > 0, "targets must not be empty");
+  const scenarioIds = scenarios.map((scenario) => scenario.id);
+  assert.equal(new Set(scenarioIds).size, scenarioIds.length, "baseline scenario ids must be unique");
+
+  const points = scenarios.map((scenario) => {
+    const ranked = rankedRecoverable(fraction, scenario.values);
+    const top = ranked[0]?.recoverable > 0 ? ranked[0].id : null;
+    return {
+      id: scenario.id,
+      top,
+      feasibility: targets.map((target) => targetFeasibility(target, fraction, scenario.values).feasible),
+    };
+  });
+  const distinctTopIds = [...new Set(points.map((point) => point.top))];
+  const targetAgreement = targets.map((target, targetIndex) => {
+    const values = points.map((point) => point.feasibility[targetIndex]);
+    return {
+      target,
+      agreement: new Set(values).size === 1,
+      feasibleScenarioCount: values.filter(Boolean).length,
+      scenarioCount: points.length,
+    };
+  });
+  return {
+    distinctTopIds,
+    topRankAgreement: distinctTopIds.length === 1,
+    targetAgreement,
+    allTargetFeasibilityAgree: targetAgreement.every((point) => point.agreement),
+  };
+}
+
+const robustness = robustnessReport(baselineScenarios, [500, 490, 480, 470]);
+assert.deepEqual(robustness.distinctTopIds, ["station-1", "run-1"], "robustness report exposes distinct top bottlenecks");
+assert.equal(robustness.topRankAgreement, false, "robustness report must not claim top-rank agreement");
+assert.deepEqual(
+  robustness.targetAgreement.map((point) => ({ target: point.target, agreement: point.agreement, feasibleScenarioCount: point.feasibleScenarioCount })),
+  [
+    { target: 500, agreement: true, feasibleScenarioCount: 3 },
+    { target: 490, agreement: false, feasibleScenarioCount: 2 },
+    { target: 480, agreement: false, feasibleScenarioCount: 1 },
+    { target: 470, agreement: true, feasibleScenarioCount: 0 },
+  ],
+  "robustness report preserves per-target disagreement instead of collapsing it",
+);
+assert.equal(robustness.allTargetFeasibilityAgree, false, "target feasibility is baseline-sensitive for the sealed scenarios");
+
 for (const seconds of [...race, ...baseline]) assert.ok(Number.isFinite(seconds) && seconds >= 0, "fixture values must be finite and non-negative");
 
-console.log("core deterministic checks: PASS (12 invariant groups)");
+console.log("core deterministic checks: PASS (15 invariant groups)");
