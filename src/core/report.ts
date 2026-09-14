@@ -25,6 +25,11 @@ export interface BaselineScenarioResult {
 export interface BaselineScenarioRobustness {
   recoverableFraction: number;
   targetSeconds: number[];
+  scenarioCoverage: {
+    scenarioCount: number;
+    baselineIds: string[];
+    exhaustive: false;
+  };
   scenarios: BaselineScenarioResult[];
   distinctTopSegmentIds: Array<string | null>;
   topRankAgreement: boolean;
@@ -144,6 +149,7 @@ export function baselineScenarioRobustness(
   return {
     recoverableFraction,
     targetSeconds: [...targetSeconds],
+    scenarioCoverage: { scenarioCount: baselines.length, baselineIds: [...baselineIds], exhaustive: false },
     scenarios,
     distinctTopSegmentIds,
     topRankAgreement: distinctTopSegmentIds.length === 1,
