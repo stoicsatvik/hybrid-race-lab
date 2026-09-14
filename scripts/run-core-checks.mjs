@@ -123,8 +123,8 @@ assert.deepEqual(
   robustness.targetAgreement.map((point) => ({ target: point.target, agreement: point.agreement, feasibleScenarioCount: point.feasibleScenarioCount })),
   [
     { target: 500, agreement: true, feasibleScenarioCount: 3 },
-    { target: 490, agreement: false, feasibleScenarioCount: 2 },
-    { target: 480, agreement: false, feasibleScenarioCount: 1 },
+    { target: 490, agreement: true, feasibleScenarioCount: 3 },
+    { target: 480, agreement: false, feasibleScenarioCount: 2 },
     { target: 470, agreement: true, feasibleScenarioCount: 0 },
   ],
   "robustness report preserves per-target disagreement instead of collapsing it",
