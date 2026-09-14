@@ -16,6 +16,27 @@ export interface TargetFeasibility {
   projectedFinishSeconds: number;
 }
 
+export interface BaselineScenarioResult {
+  baselineId: string;
+  topSegmentId: string | null;
+  targetFeasibility: TargetFeasibility[];
+}
+
+export interface BaselineScenarioRobustness {
+  recoverableFraction: number;
+  targetSeconds: number[];
+  scenarios: BaselineScenarioResult[];
+  distinctTopSegmentIds: Array<string | null>;
+  topRankAgreement: boolean;
+  targetFeasibilityAgreement: Array<{
+    targetSeconds: number;
+    agreement: boolean;
+    feasibleScenarioCount: number;
+    scenarioCount: number;
+  }>;
+  allTargetFeasibilityAgree: boolean;
+}
+
 export interface RaceDebrief {
   raceId: string;
   baselineId: string;
@@ -80,6 +101,54 @@ export function targetFeasibility(
     feasible: available >= required,
     selectedSavings: selected,
     projectedFinishSeconds: total - achieved,
+  };
+}
+
+export function baselineScenarioRobustness(
+  race: RaceRecord,
+  baselines: readonly RaceBaseline[],
+  targetSeconds: readonly number[],
+  recoverableFraction = 0.5,
+): BaselineScenarioRobustness {
+  if (baselines.length === 0) throw new Error("baselines must not be empty");
+  if (targetSeconds.length === 0) throw new Error("targetSeconds must not be empty");
+  if (!Number.isFinite(recoverableFraction) || recoverableFraction < 0 || recoverableFraction > 1) {
+    throw new Error("recoverableFraction must be within [0, 1]");
+  }
+
+  const baselineIds = baselines.map((baseline) => baseline.id);
+  if (new Set(baselineIds).size !== baselineIds.length) throw new Error("baseline ids must be unique");
+
+  const scenarios = baselines.map((baseline): BaselineScenarioResult => {
+    const ranked = rankBottlenecks(race, baseline, recoverableFraction);
+    const top = ranked[0];
+    return {
+      baselineId: baseline.id,
+      topSegmentId: top?.recoverableSeconds > 0 ? top.segmentId : null,
+      targetFeasibility: targetSeconds.map((target) => targetFeasibility(race, baseline, target, recoverableFraction)),
+    };
+  });
+
+  const distinctTopSegmentIds = Array.from(new Set(scenarios.map((scenario) => scenario.topSegmentId)));
+  const targetFeasibilityAgreement = targetSeconds.map((target, index) => {
+    const feasibility = scenarios.map((scenario) => scenario.targetFeasibility[index].feasible);
+    const feasibleScenarioCount = feasibility.filter(Boolean).length;
+    return {
+      targetSeconds: target,
+      agreement: new Set(feasibility).size === 1,
+      feasibleScenarioCount,
+      scenarioCount: scenarios.length,
+    };
+  });
+
+  return {
+    recoverableFraction,
+    targetSeconds: [...targetSeconds],
+    scenarios,
+    distinctTopSegmentIds,
+    topRankAgreement: distinctTopSegmentIds.length === 1,
+    targetFeasibilityAgreement,
+    allTargetFeasibilityAgree: targetFeasibilityAgreement.every((point) => point.agreement),
   };
 }
 
