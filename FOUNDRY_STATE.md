@@ -58,11 +58,11 @@ Implementation commits: `d8bb97ef99b511c2872be13c992964ac8fa9d008` and `400318b4
 Implemented: `baselineScenarioRobustness` in `src/core/report.ts`, reporting per-baseline top bottleneck, per-target feasibility, distinct top segment IDs, top-rank agreement, per-target agreement counts, and aggregate target-agreement status. Inputs require non-empty baseline/target sets, unique baseline IDs, and a bounded recoverable fraction.
 Initial sealed expectation was falsified by Core CI `34810001524`: `npm ci` passed, `npm run test:core` failed, and TypeScript was skipped. The expected feasible-scenario counts at 490/480 s had been incorrectly preregistered as 2/1; direct recomputation of the same sealed arithmetic gives 3/2. The report algorithm was not changed.
 Correction commit: `9e334b958ef37b6a3e2fc49e7fc42f502620e122` updates only the expected synthetic counts. Correct sealed feasibility counts for 500/490/480/470 s are 3/3/2/0, giving agreement `[true, true, false, true]`. Top-rank agreement remains false with distinct tops `station-1` and `run-1`.
-Validation contract: dependency-free runner remains 15 invariant groups. Exact correction head `9e334b95...` requires unchanged Core CI before promotion.
-Claim status: prior analytical core remains SUPPORTED; baseline-choice invariance remains REJECTED; the first robustness-report test expectation at `400318b4...` is REJECTED; explicit robustness report at `9e334b95...` is NOT YET PROVEN pending exact-head CI; real athlete predictive validity and causal coaching usefulness remain NOT YET PROVEN.
+Validation: exact correction commit `9e334b95...` Core CI `34810075847` completed SUCCESS. The 15-group dependency-free contract and scoped production-core TypeScript both cleared unchanged after correcting the rejected expectation. Mobile CI remains an independent framework-health gate.
+Claim status: prior analytical core SUPPORTED; baseline-choice invariance REJECTED; the incorrect first robustness expectation at `400318b4...` REJECTED; explicit baseline-scenario robustness report SUPPORTED at exact correction commit `9e334b95...`; real athlete predictive validity and causal coaching usefulness NOT YET PROVEN.
 Safety/privacy: synthetic fixtures and generic race mathematics only; no private athlete data, credentials, proprietary coaching heuristics, or causal training claims.
-Blocker: exact-head Core CI evidence for `9e334b95...` has not yet been observed. Mobile/Expo health remains independently REJECTED and is not part of this claim.
-Next step: require exact-head Core CI for the corrected 15-group contract. If green, attack scenario-set sensitivity itself: determine whether adding/removing preregistered baselines changes agreement conclusions and expose coverage limits rather than calling three scenarios exhaustive.
+Blocker: no core robustness blocker. Mobile/Expo health remains independently REJECTED and is not part of this claim.
+Next step: attack scenario-set sensitivity itself: determine whether adding/removing preregistered baselines changes agreement conclusions and expose scenario coverage limits rather than calling three scenarios exhaustive.
 
 ## Acceptance
 Given one race and one comparison baseline, the tool must reproducibly explain where time was lost, how sensitive that conclusion is to baseline assumptions, and what combinations of segment improvements can reach a requested finish time.
@@ -70,4 +70,4 @@ Given one race and one comparison baseline, the tool must reproducibly explain w
 ## Initial evidence target
 Use public or synthetic HYROX-style split examples only. Do not fabricate athlete performance data or claim causal training advice from race splits alone.
 
-Status: ACTIVE / SUPPORTED CORE, BASELINE ROBUSTNESS REJECTED, ROBUSTNESS REPORT NOT YET PROVEN, REAL-WORLD VALIDITY NOT YET PROVEN
+Status: ACTIVE / SUPPORTED CORE AND ROBUSTNESS REPORT, BASELINE INVARIANCE REJECTED, REAL-WORLD VALIDITY NOT YET PROVEN
