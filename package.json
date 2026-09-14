@@ -40,7 +40,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test:core": "node ./scripts/run-core-checks.mjs"
+    "test:core": "node ./scripts/run-core-checks.mjs && node ./scripts/run-scenario-set-checks.mjs"
   },
   "private": true
 }
